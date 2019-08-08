@@ -1,14 +1,47 @@
-# Wikipedia Document Label Pairs
-
-## Original Data Source
-Wikidata json dump, 2019.07 
+# Wikidata Parser
+- [Wikidata Parser](#wikidata-parser)
+  - [Description](#description)
+  - [Usage](#usage)
+    - [Install required packages](#install-required-packages)
+    - [Select target language pair](#select-target-language-pair)
+    - [Run parser](#run-parser)
+    - [Result](#result)
+  - [Filters](#filters)
 
 ## Description
-These pairs are labels of documents from `Wikipedia dump`.
+**Wikidata parser** extracts labels(document name) from [Wikidata dump](https://www.wikidata.org/wiki/Wikidata:Database_download) in given language pairs.
 
-## Data
-This repository contains 15 pairs of Wikipedia document labels.
+Wikidata dump is a single huge [ndjson](http://ndjson.org/) file. Each line is an json object describing an entity.
+
+Project structure is as shown below.
+
 ```
+Wikidata_Parser
+├── filters
+│   ├── en_pair.json
+│   ├── namespaces.json
+│   ├── remove_regex.json
+│   ├── skip_regex.json
+│   ├── target_pairs.json
+│   ├── templates.json
+│   └── typos.json
+├── README.md
+├── run_parse_wiki.py
+└── wikidata.py
+```
+
+## Usage
+
+### Install required packages
+
+```bash
+pip3 install -r requirements.txt
+```
+
+### Select target language pair
+
+```bash
+./filters/target_pairs.json
 [
     ["ko", "en"],
     ["ko", "zh"],
@@ -27,34 +60,78 @@ This repository contains 15 pairs of Wikipedia document labels.
     ["ko", "yue"]
 ]
 ```
-Each directory under corpus has a pair of headword and `*.same` file contains headwords that are exactly same in both side.
-Size of each corpus are as shown below.
-```
-  407480 corpus/ko-fr/
-  323223 corpus/ko-nl/
-  382006 corpus/ko-zh/
-  594268 corpus/ko-en/
-  341473 corpus/ko-ar/
-  344804 corpus/ko-de/
-   58947 corpus/ko-yue/
-  374379 corpus/ko-es/
-  323916 corpus/ko-it/
-  248175 corpus/ko-pl/
-  408519 corpus/ko-ja/
-  306574 corpus/ko-pt/
-   60357 corpus/ko-hi/
-  196992 corpus/ko-vi/
-  362166 corpus/ko-ru/
-```
-## Jupyter Notebook
-You can refer to the jupyter notebook to look into data processing procedures.
 
-## Postprocess
-* Heading namespaces (e.g. Category: , Help: ) are removed.
-* Parenthesis areas are removed. 
-* Redundant suffixes depend on language are removed. (e.g. /설명문서)
-* Removed parentheses recursively.
-* Removed Wikipedia symbols.
-* Manually corrected typos in original data.
+### Run parser
 
-If you have new things to remove, you can edit files in `./filters` and re-run post-processing script in the Jupyter Notebook.
+```bash
+python3 run_parse_wiki.py WIKIDATA_DUMP_DIR(latest-all.json.bz2)
+```
+
+`run_parse_wiki.py` extracts the bz2 file and parses each line in parallel for each language pair. Extracting bz2 file seems to be a bottleneck. If you have enough space on your disk (about 800GB), you may want to extract it using `pbzip2` before parsing.
+
+### Result
+
+```bash
+./corpus
+├── ko-ar
+│   ├── corpus.ar
+│   └── corpus.ko
+├── ko-de
+│   ├── corpus.de
+│   └── corpus.ko
+├── ko-en
+│   ├── corpus.en
+│   └── corpus.ko
+├── ko-es
+│   ├── corpus.es
+│   └── corpus.ko
+├── ko-fr
+│   ├── corpus.fr
+│   └── corpus.ko
+├── ko-hi
+│   ├── corpus.hi
+│   └── corpus.ko
+├── ko-it
+│   ├── corpus.it
+│   └── corpus.ko
+├── ko-ja
+│   ├── corpus.ja
+│   └── corpus.ko
+├── ko-nl
+│   ├── corpus.ko
+│   └── corpus.nl
+├── ko-pl
+│   ├── corpus.ko
+│   └── corpus.pl
+├── ko-pt
+│   ├── corpus.ko
+│   └── corpus.pt
+├── ko-ru
+│   ├── corpus.ko
+│   └── corpus.ru
+├── ko-vi
+│   ├── corpus.ko
+│   └── corpus.vi
+├── ko-yue
+│   ├── corpus.ko
+│   └── corpus.yue
+└── ko-zh
+    ├── corpus.ko
+    └── corpus.zh
+
+```
+
+## Filters
+
+```bash
+./filters
+├── namespaces.json
+├── remove_regex.json
+├── skip_regex.json
+├── target_pairs.json
+├── templates.json
+└── typos.json
+```
+
+When you found error from corpora, you can update those filters and run filtering again. You can find each filter in `wikidata.py` module.
+Your contributions are always welcome!
