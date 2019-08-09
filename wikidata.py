@@ -73,6 +73,9 @@ def parse(lang_pair, q):
 
     corpus = [ open(lang_pair_dir+'/corpus.'+lang, 'w') for lang in lang_pair ]
 
+    # To check duplication, make a set and store all pairs.
+    corpus_pairs = {}
+
     while True:
         line = q.get()
         try:
@@ -104,8 +107,13 @@ def parse(lang_pair, q):
         if label_pair[0] == label_pair[1]:
             continue
 
-        for c, l in zip(corpus, label_pair):
-            c.write(l+'\n') 
+        # Check if pair is duplicated
+        if label_pair in corpus_pairs:
+            continue
+        else:
+            corpus_pairs.add(label_pair)
+            for c, l in zip(corpus, label_pair):
+                c.write(l+'\n') 
 
     for c in corpus:
         c.close() 
