@@ -105,9 +105,3 @@ def parse(lang_pair, q):
 
     for c in corpus:
         c.close() 
-
-    namespaces.close()
-    typos.close()
-    regex_remove.close()
-    regex_skip.close()
-    templates.close()
