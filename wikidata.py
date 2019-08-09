@@ -97,7 +97,11 @@ def parse(lang_pair, q):
         label_pair = [ remove_parenthesis_area(label) for label in label_pair ]
 
         skip = [ skip_regex(label, lang) for label, lang in zip(label_pair, lang_pair) ]
+
         if True in skip:
+            continue
+
+        if label_pair[0] == label_pair[1]:
             continue
 
         for c, l in zip(corpus, label_pair):
